@@ -1,10 +1,10 @@
 from tkinter import Frame
 
-from .gui import Grid
-from .world import World
+from .view import Grid
+from .model import World
 
 
-class GameOfLife(Frame):
+class GameOfLifePresenter(Frame):
 
     def __init__(self, width, height, delay, master=None):
         if master is not None:
@@ -14,6 +14,9 @@ class GameOfLife(Frame):
         self.grid = Grid(width, height)
         self.world = World(width, height)
 
+        self.after(self.delay, self.on_timer)
+        self.pack()
+        # Test
         self.world.set_alive(13, 13)
         self.world.set_alive(13, 14)
         self.world.set_alive(13, 15)
@@ -26,9 +29,6 @@ class GameOfLife(Frame):
         self.world.set_alive(17, 15)
         self.world.set_alive(17, 16)
         self.world.set_alive(17, 17)
-
-        self.after(self.delay, self.on_timer)
-        self.pack()
 
     def on_timer(self):
         self.world.advance()

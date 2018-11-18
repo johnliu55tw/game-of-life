@@ -1,7 +1,7 @@
 import unittest
 
-from game_of_life.world import World
-from game_of_life.world import OutOfBoundError
+from game_of_life.model import World
+from game_of_life.model import OutOfBoundError
 
 
 class WorldTestCase(unittest.TestCase):
