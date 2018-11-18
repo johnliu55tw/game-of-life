@@ -1,6 +1,6 @@
 import unittest
 
-from game_of_life import World
+from game_of_life.world import World
 from game_of_life.world import OutOfBoundError
 
 
@@ -339,70 +339,20 @@ class WorldTestCase(unittest.TestCase):
         self.assertEqual(world._calc_aliveness(9, 8), True)
         self.assertEqual(world._calc_aliveness(8, 8), True)
 
-    def test_alived_then_died_by_solitude(self):
+    def test_advance(self):
         world = World(10, 10)
-        world.set_alive(5, 5)
+        world.set_alive(9, 9)
+        world.set_alive(8, 9)
+        world.set_alive(9, 8)
+        self.assertCountEqual(world.alives,
+                              ((9, 9),
+                               (8, 9),
+                               (9, 8)))
 
         world.advance()
 
-        self.assertEqual(world.is_alive(5, 5), False)
-        self.assertEqual(world.alives, tuple())
-
-    def test_alived_then_died_by_one_neighbor(self):
-        world = World(10, 10)
-        world.set_alive(5, 5)
-        world.set_alive(5, 6)
-
-        world.advance()
-
-        self.assertEqual(world.is_alive(5, 5), False)
-        self.assertEqual(world.is_alive(5, 6), False)
-        self.assertEqual(len(world.alives), 0)
-
-    def test_alived_then_died_by_overpopulation(self):
-        world = World(10, 10)
-        world.set_alive(5, 5)
-        world.set_alive(5, 6)
-        world.set_alive(5, 4)
-        world.set_alive(6, 5)
-        world.set_alive(6, 4)
-
-        world.advance()
-
-        self.assertEqual(world.is_alive(5, 5), False)
-        self.assertEqual(world.is_alive(6, 5), False)
-
-    def test_alived_then_survived(self):
-        world = World(10, 10)
-        world.set_alive(5, 5)
-        world.set_alive(6, 5)
-        world.set_alive(5, 6)
-
-        world.advance()
-
-        self.assertEqual(world.is_alive(5, 5), True)
-        self.assertEqual(world.is_alive(6, 5), True)
-        self.assertEqual(world.is_alive(5, 6), True)
-
-    def test_died_become_alive(self):
-        world = World(10, 10)
-        world.set_alive(5, 5)
-        world.set_alive(6, 5)
-        world.set_alive(5, 6)
-
-        world.advance()
-
-        self.assertEqual(world.is_alive(6, 6), True)
-
-    def test_alive_bottom_left_corner(self):
-        world = World(10, 10)
-        world.set_alive(0, 0)
-        world.set_alive(0, 1)
-        world.set_alive(1, 0)
-
-        world.advance()
-
-        self.assertEqual(world.is_alive(0, 0), True)
-        self.assertEqual(world.is_alive(0, 1), True)
-        self.assertEqual(world.is_alive(1, 0), True)
-        self.assertEqual(world.is_alive(1, 1), True)
+        self.assertCountEqual(world.alives,
+                              ((9, 9),
+                               (8, 9),
+                               (9, 8),
+                               (8, 8)))
