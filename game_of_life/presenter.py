@@ -46,7 +46,7 @@ class GameOfLifePresenter(object):
                 if (x, y) in self.world.alives:
                     self.grid.set_alive(x, y)
                 else:
-                    self.grid.set_died(x, y)
+                    self.grid.set_dead(x, y)
         self.root.after(self.delay, self.on_timer)
 
     def on_left_click(self, event):
@@ -55,11 +55,11 @@ class GameOfLifePresenter(object):
         if cell is not None:
             x, y = cell
             if (x, y) in self.world.alives:
-                logger.debug('Set cell {}, {} to died.'.format(x, y))
+                logger.debug('Set cell {}, {} to dead.'.format(x, y))
                 self.world.set_dead(x, y)
-                self.grid.set_died(x, y)
+                self.grid.set_dead(x, y)
             else:
-                logger.debug('Set cell {}, {} to alived.'.format(x, y))
+                logger.debug('Set cell {}, {} to alive.'.format(x, y))
                 self.world.set_alive(x, y)
                 self.grid.set_alive(x, y)
         else:
