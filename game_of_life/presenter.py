@@ -1,4 +1,5 @@
 import logging
+
 import tkinter
 
 from .view import Grid
@@ -49,17 +50,17 @@ class GameOfLifePresenter(object):
         self.root.after(self.delay, self.on_timer)
 
     def on_left_click(self, event):
-        logger.debug(f'Left click event: X: {event.x}, Y: {event.y}')
+        logger.debug('Left click event: X: {}, Y: {}'.format(event.x, event.y))
         cell = self.grid.get_cell_from_pixel_coor(event.x, event.y)
         if cell is not None:
             x, y = cell
             if (x, y) in self.world.alives:
-                logger.debug(f'Set cell {x}, {y} to died.')
+                logger.debug('Set cell {}, {} to died.'.format(x, y))
                 self.world.set_dead(x, y)
                 self.grid.set_died(x, y)
             else:
-                logger.debug(f'Set cell {x}, {y} to alived.')
+                logger.debug('Set cell {}, {} to alived.'.format(x, y))
                 self.world.set_alive(x, y)
                 self.grid.set_alive(x, y)
         else:
-            logger.debug(f'Left click: On border')
+            logger.debug('Left click: On border')
