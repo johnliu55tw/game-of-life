@@ -1,9 +1,11 @@
-import tkinter
+import logging
 
 from game_of_life.presenter import GameOfLifePresenter
 
 
+logging.basicConfig(level=logging.DEBUG)
+
+
 if __name__ == '__main__':
-    root = tkinter.Tk()
-    g = GameOfLifePresenter(50, 50, 100, master=root)
-    root.mainloop()
+    g = GameOfLifePresenter(50, 50, 5000)
+    g.start()
