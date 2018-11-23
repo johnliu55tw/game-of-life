@@ -72,11 +72,11 @@ class Grid(Canvas):
 
         return (cell_x, cell_y)
 
-    def _set_alive(self, x, y):
-        self.itemconfig(self._cells[x][y], fill=self.ALIVE_COLOR)
+    def _set_alive(self, cell_x, cell_y):
+        self.itemconfig(self._cells[cell_x][cell_y], fill=self.ALIVE_COLOR)
 
-    def _set_dead(self, x, y):
-        self.itemconfig(self._cells[x][y], fill=self.DEAD_COLOR)
+    def _set_dead(self, cell_x, cell_y):
+        self.itemconfig(self._cells[cell_x][cell_y], fill=self.DEAD_COLOR)
 
     def set_alives(self, alive_cells):
         alive_cells = frozenset(alive_cells)
