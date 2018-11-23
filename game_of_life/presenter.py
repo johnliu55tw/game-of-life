@@ -41,12 +41,7 @@ class GameOfLifePresenter(object):
 
     def on_timer(self):
         self.world.advance()
-        for x in range(self.size[0]):
-            for y in range(self.size[1]):
-                if (x, y) in self.world.alives:
-                    self.grid.set_alive(x, y)
-                else:
-                    self.grid.set_dead(x, y)
+        self.grid.set_alives(self.world.alives)
         self.root.after(self.delay, self.on_timer)
 
     def on_cell_click(self, event):
@@ -56,8 +51,8 @@ class GameOfLifePresenter(object):
         if (x, y) in self.world.alives:
             logger.debug('Set cell {}, {} to dead.'.format(x, y))
             self.world.set_dead(x, y)
-            self.grid.set_dead(x, y)
         else:
             logger.debug('Set cell {}, {} to alive.'.format(x, y))
             self.world.set_alive(x, y)
-            self.grid.set_alive(x, y)
+
+        self.grid.set_alives(self.world.alives)

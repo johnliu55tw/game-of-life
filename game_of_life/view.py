@@ -15,6 +15,7 @@ class Grid(Canvas):
     def __init__(self, width, height):
         self.width = width
         self.height = height
+        self._alive_cells = frozenset()
 
         w_px = (self.CELL_SIZE + self.OUTLINE_WIDTH) * width + self.OUTLINE_WIDTH
         h_px = (self.CELL_SIZE + self.OUTLINE_WIDTH) * height + self.OUTLINE_WIDTH
@@ -71,8 +72,23 @@ class Grid(Canvas):
 
         return (cell_x, cell_y)
 
-    def set_alive(self, x, y):
+    def _set_alive(self, x, y):
         self.itemconfig(self._cells[x][y], fill=self.ALIVE_COLOR)
 
-    def set_dead(self, x, y):
+    def _set_dead(self, x, y):
         self.itemconfig(self._cells[x][y], fill=self.DEAD_COLOR)
+
+    def set_alives(self, alive_cells):
+        alive_cells = frozenset(alive_cells)
+
+        # Calculate the changes from current alive cells to the new alive cells
+        now_dead_cells = self._alive_cells - alive_cells
+        now_alive_cells = alive_cells - self._alive_cells
+
+        # Update cell state
+        for x, y in now_dead_cells:
+            self._set_dead(x, y)
+        for x, y in now_alive_cells:
+            self._set_alive(x, y)
+
+        self._alive_cells = alive_cells
