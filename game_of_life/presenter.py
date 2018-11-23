@@ -19,7 +19,7 @@ class GameOfLifePresenter(object):
         self.grid = Grid(width, height)
         self.world = World(width, height)
 
-        self.grid.bind('<Button-1>', self.on_left_click)
+        self.grid.bind('<<Cell-Click>>', self.on_cell_click)
 
         # Test
         self.world.set_alive(13, 13)
@@ -49,18 +49,15 @@ class GameOfLifePresenter(object):
                     self.grid.set_dead(x, y)
         self.root.after(self.delay, self.on_timer)
 
-    def on_left_click(self, event):
-        logger.debug('Left click event: X: {}, Y: {}'.format(event.x, event.y))
-        cell = self.grid.get_cell_from_pixel_coor(event.x, event.y)
-        if cell is not None:
-            x, y = cell
-            if (x, y) in self.world.alives:
-                logger.debug('Set cell {}, {} to dead.'.format(x, y))
-                self.world.set_dead(x, y)
-                self.grid.set_dead(x, y)
-            else:
-                logger.debug('Set cell {}, {} to alive.'.format(x, y))
-                self.world.set_alive(x, y)
-                self.grid.set_alive(x, y)
+    def on_cell_click(self, event):
+        logger.debug('on_cell_click! X:{}, Y:{}'.format(event.x, event.y))
+        x, y = event.x, event.y
+
+        if (x, y) in self.world.alives:
+            logger.debug('Set cell {}, {} to dead.'.format(x, y))
+            self.world.set_dead(x, y)
+            self.grid.set_dead(x, y)
         else:
-            logger.debug('Left click: On border')
+            logger.debug('Set cell {}, {} to alive.'.format(x, y))
+            self.world.set_alive(x, y)
+            self.grid.set_alive(x, y)
