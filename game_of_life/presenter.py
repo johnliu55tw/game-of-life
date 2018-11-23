@@ -1,5 +1,4 @@
 import logging
-
 import tkinter
 
 from .view import Grid
@@ -20,20 +19,6 @@ class GameOfLifePresenter(object):
         self.world = World(width, height)
 
         self.grid.bind('<<Cell-Click>>', self.on_cell_click)
-
-        # Test
-        self.world.set_alive(13, 13)
-        self.world.set_alive(13, 14)
-        self.world.set_alive(13, 15)
-        self.world.set_alive(13, 16)
-        self.world.set_alive(13, 17)
-        self.world.set_alive(15, 13)
-        self.world.set_alive(15, 17)
-        self.world.set_alive(17, 13)
-        self.world.set_alive(17, 14)
-        self.world.set_alive(17, 15)
-        self.world.set_alive(17, 16)
-        self.world.set_alive(17, 17)
 
     def start(self):
         self.root.after(self.delay, self.on_timer)
