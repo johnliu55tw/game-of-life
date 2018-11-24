@@ -43,11 +43,19 @@ class World(object):
 
     @check_boundary
     def set_dead(self, x, y):
-        self._alives.remove((x, y))
+        if self.is_alive(x, y):
+            self._alives.remove((x, y))
 
     @check_boundary
     def is_alive(self, x, y):
         return (x, y) in self._alives
+
+    @check_boundary
+    def toggle_aliveness(self, x, y):
+        if self.is_alive(x, y):
+            self.set_dead(x, y)
+        else:
+            self.set_alive(x, y)
 
     def _calc_neighbors(self, x, y):
         all_nbrs = ((x-1, y-1),

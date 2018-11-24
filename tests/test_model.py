@@ -74,6 +74,34 @@ class WorldTestCase(unittest.TestCase):
         with self.assertRaises(OutOfBoundError):
             world.set_dead(20, 30)
 
+    def test_set_dead_for_not_alives(self):
+        world = World(20, 30)
+        world.set_dead(3, 4)
+
+        self.assertEqual(world.is_alive(3, 4), False)
+
+    def test_toggle_aliveness_from_dead(self):
+        world = World(20, 30)
+        world.set_dead(2, 3)
+
+        world.toggle_aliveness(2, 3)
+
+        self.assertEqual(world.is_alive(2, 3), True)
+
+    def test_toggle_aliveness_from_alive(self):
+        world = World(20, 30)
+        world.set_alive(2, 3)
+
+        world.toggle_aliveness(2, 3)
+
+        self.assertEqual(world.is_alive(2, 3), False)
+
+    def test_toggle_aliveness_out_of_bound(self):
+        world = World(20, 30)
+
+        with self.assertRaises(OutOfBoundError):
+            world.toggle_aliveness(20, 30)
+
     def test_get_alives(self):
         world = World(20, 30)
 
