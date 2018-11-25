@@ -28,6 +28,8 @@ class GameOfLifePresenter(object):
         return self._is_running
 
     def run(self):
+        self.main_view.update(alives=self.world.alives)
+        self.stop()
         self.root.mainloop()
 
     def start(self):

@@ -35,11 +35,16 @@ class GameOfLifePresenterTestCase(TestCase):
     def test_run(self, m_world, m_main_view, m_tkinter):
         root_inst = mock.Mock()
         m_tkinter.Tk.return_value = root_inst
+        main_view_inst = m_main_view.return_value
+        world_inst = m_world.return_value
         p = presenter.GameOfLifePresenter(5, 6, 123)
 
-        p.run()
+        with mock.patch.object(p, 'stop'):
+            p.run()
 
-        root_inst.mainloop.assert_called()
+            p.stop.assert_called()
+            main_view_inst.update.assert_called_with(alives=world_inst.alives)
+            root_inst.mainloop.assert_called()
 
     def test_start(self, m_world, m_main_view, m_tkinter):
         root_inst = mock.Mock()
@@ -107,14 +112,6 @@ class GameOfLifePresenterTestCase(TestCase):
 
         world_inst.toggle_aliveness.assert_called_with(fake_event.x, fake_event.y)
         main_view_inst.update.assert_called_with(alives=world_inst.alives)
-
-    def test_on_startstop_toggle_after_init(self, m_world, m_main_view, m_tkinter):
-        p = presenter.GameOfLifePresenter(5, 6, 123)
-        p.run()
-
-        with mock.patch.object(p, 'start'):
-            p.on_startstop_toggle(mock.Mock())
-            p.start.assert_called()
 
     def test_on_startstop_toggle_when_is_running(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
