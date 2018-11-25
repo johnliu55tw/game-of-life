@@ -19,7 +19,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         self.assertIsInstance(p, presenter.GameOfLifePresenter)
         self.assertEqual(p.size, (5, 6))
-        self.assertEqual(p.delay, 123)
+        self.assertEqual(p.min_delay, 123)
         self.assertEqual(p.is_running, False)
         self.assertEqual(p.main_view, m_main_view.return_value)
         self.assertEqual(p.world, m_world.return_value)
@@ -29,6 +29,7 @@ class GameOfLifePresenterTestCase(TestCase):
             mock.call('<<Cell-Click>>', p.on_cell_click),
             mock.call('<<StartStop-Toggle>>', p.on_startstop_toggle),
             mock.call('<<Next-Click>>', p.on_next_click),
+            mock.call('<<Speed-Change>>', p.on_speed_change),
         ])
 
     def test_is_running_property(self, m_world, m_main_view, m_tkinter):
@@ -61,7 +62,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         p.start()
 
-        root_inst.after.assert_called_with(p.delay, p.on_timer)
+        root_inst.after.assert_called_with(p._timer_delay, p.on_timer)
         self.assertTrue(p.is_running)
         main_view_inst.update.assert_called_with(startstop_text='Stop')
 
@@ -74,6 +75,32 @@ class GameOfLifePresenterTestCase(TestCase):
 
         self.assertFalse(p.is_running)
         main_view_inst.update.assert_called_with(startstop_text='Start')
+
+    def test_set_speed(self, m_world, m_main_view, m_tkinter):
+        p = presenter.GameOfLifePresenter(5, 6, 123)
+        p.run()
+
+        p.set_speed(0.1)
+        self.assertEqual(p._timer_delay, int(123/0.1))
+
+        p.set_speed(0.5)
+        self.assertEqual(p._timer_delay, int(123/0.5))
+
+        p.set_speed(1)
+        self.assertEqual(p._timer_delay, int(123/1))
+
+    def test_set_speed_out_of_bound(self, m_world, m_main_view, m_tkinter):
+        p = presenter.GameOfLifePresenter(5, 6, 123)
+        p.run()
+
+        with self.assertRaises(ValueError):
+            p.set_speed(0)
+
+        with self.assertRaises(ValueError):
+            p.set_speed(1.0001)
+
+        with self.assertRaises(ValueError):
+            p.set_speed(-0.001)
 
     def test_on_timer_when_is_running(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
@@ -88,7 +115,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         world_inst.advance.assert_called()
         main_view_inst.update.assert_called_with(alives=world_inst.alives)
-        root_inst.after.assert_called_with(p.delay, p.on_timer)
+        root_inst.after.assert_called_with(p._timer_delay, p.on_timer)
 
     def test_on_timer_when_not_is_running(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
@@ -150,3 +177,14 @@ class GameOfLifePresenterTestCase(TestCase):
 
         p.world.advance.assert_called()
         p.main_view.update.assert_called_with(alives=p.world.alives)
+
+    def test_on_speed_change(self, m_world, m_main_view, m_tkinter):
+        p = presenter.GameOfLifePresenter(5, 6, 123)
+        p.run()
+        p.start()
+        fake_event = mock.Mock()
+        fake_event.x = 30
+
+        with mock.patch.object(p, 'set_speed'):
+            p.on_speed_change(fake_event)
+            p.set_speed.assert_called_with(0.3)

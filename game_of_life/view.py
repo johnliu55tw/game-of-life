@@ -1,6 +1,6 @@
 import logging
-from tkinter import Canvas, Frame, Button
-from tkinter import W
+from tkinter import Canvas, Frame, Button, Scale
+from tkinter import HORIZONTAL
 
 
 logger = logging.getLogger(__name__)
@@ -127,6 +127,26 @@ class NextButton(Button):
         self.event_generate('<<Next-Click>>')
 
 
+class SpeedSlider(Scale):
+
+    def __init__(self, master=None):
+        self._master = master
+        super().__init__(from_=10,
+                         to=100,
+                         resolution=10,
+                         orient=HORIZONTAL,
+                         master=self._master,
+                         showvalue=0,
+                         command=self._translate_click_event)
+
+    def _translate_click_event(self, value):
+        logger.debug('SpeedSlider value {} received.'
+                     ' Translating into <<Speed-Change>>.'.format(value))
+        # XXX: I use attribute "x" to carry the value information.
+        # Also, it must be an int :(
+        self.event_generate('<<Speed-Change>>', x=value)
+
+
 class MainView(Frame):
 
     def __init__(self, grid_width, grid_height, master=None):
@@ -137,10 +157,12 @@ class MainView(Frame):
         self.world_grid = Grid(width=grid_width, height=grid_height, master=self)
         self.startstop_button = StartStopButton(master=self)
         self.next_button = NextButton(master=self)
+        self.speed_slider = SpeedSlider(master=self)
 
-        self.world_grid.grid(row=0, column=0, columnspan=2)
-        self.startstop_button.grid(row=1, column=0, sticky=W, pady=5, padx=5)
-        self.next_button.grid(row=1, column=1, sticky=W, pady=5, padx=5)
+        self.world_grid.grid(row=0, column=0, columnspan=3)
+        self.startstop_button.grid(row=1, column=0, pady=5, padx=5)
+        self.next_button.grid(row=1, column=1, pady=5, padx=5)
+        self.speed_slider.grid(row=1, column=2, pady=5, padx=5)
 
         self.pack()
 
