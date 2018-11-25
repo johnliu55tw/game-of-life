@@ -25,6 +25,12 @@ class GameOfLifePresenterTestCase(TestCase):
         self.assertEqual(p.world, m_world.return_value)
         self.assertEqual(p.root, m_tkinter.Tk.return_value)
 
+        p.main_view.bind_all.assert_has_calls([
+            mock.call('<<Cell-Click>>', p.on_cell_click),
+            mock.call('<<StartStop-Toggle>>', p.on_startstop_toggle),
+            mock.call('<<Next-Click>>', p.on_next_click),
+        ])
+
     def test_is_running_property(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
 
@@ -131,3 +137,16 @@ class GameOfLifePresenterTestCase(TestCase):
         with mock.patch.object(p, 'start'):
             p.on_startstop_toggle(mock.Mock())
             p.start.assert_called()
+
+    def test_on_next_click_when_is_running(self, m_world, m_main_view, m_tkinter):
+        p = presenter.GameOfLifePresenter(5, 6, 123)
+        p.run()
+        p.start()
+        # Reset them to verify the behavior of the target function
+        p.world.reset_mock()
+        p.main_view.reset_mock()
+
+        p.on_next_click(mock.Mock())
+
+        p.world.advance.assert_called()
+        p.main_view.update.assert_called_with(alives=p.world.alives)

@@ -1,5 +1,6 @@
 import logging
 from tkinter import Canvas, Frame, Button
+from tkinter import W
 
 
 logger = logging.getLogger(__name__)
@@ -112,6 +113,20 @@ class StartStopButton(Button):
         self.event_generate('<<StartStop-Toggle>>')
 
 
+class NextButton(Button):
+
+    def __init__(self, master=None):
+        self._master = master
+        super().__init__(text='Next',
+                         width=10,
+                         master=self._master,
+                         command=self._translate_click_event)
+
+    def _translate_click_event(self):
+        logger.debug('NextButton <Button-1> received. Translating into <<Next-Click>>')
+        self.event_generate('<<Next-Click>>')
+
+
 class MainView(Frame):
 
     def __init__(self, grid_width, grid_height, master=None):
@@ -119,15 +134,18 @@ class MainView(Frame):
         super().__init__(bg='',
                          master=self._master)
 
-        self.grid = Grid(width=grid_width, height=grid_height, master=self)
+        self.world_grid = Grid(width=grid_width, height=grid_height, master=self)
         self.startstop_button = StartStopButton(master=self)
+        self.next_button = NextButton(master=self)
 
-        self.grid.pack()
-        self.startstop_button.pack()
+        self.world_grid.grid(row=0, column=0, columnspan=2)
+        self.startstop_button.grid(row=1, column=0, sticky=W, pady=5, padx=5)
+        self.next_button.grid(row=1, column=1, sticky=W, pady=5, padx=5)
+
         self.pack()
 
     def update(self, alives=None, startstop_text=None):
         if alives is not None:
-            self.grid.set_alives(alives)
+            self.world_grid.set_alives(alives)
         if startstop_text is not None:
             self.startstop_button.config(text=startstop_text)

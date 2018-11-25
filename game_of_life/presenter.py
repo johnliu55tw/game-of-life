@@ -22,6 +22,7 @@ class GameOfLifePresenter(object):
         # Must use bind_all to capture event
         self.main_view.bind_all('<<Cell-Click>>', self.on_cell_click)
         self.main_view.bind_all('<<StartStop-Toggle>>', self.on_startstop_toggle)
+        self.main_view.bind_all('<<Next-Click>>', self.on_next_click)
 
     @property
     def is_running(self):
@@ -60,3 +61,7 @@ class GameOfLifePresenter(object):
             self.stop()
         else:
             self.start()
+
+    def on_next_click(self, event):
+        self.world.advance()
+        self.main_view.update(alives=self.world.alives)
