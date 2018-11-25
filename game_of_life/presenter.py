@@ -1,7 +1,7 @@
 import logging
 import tkinter
 
-from .view import Grid
+from .view import MainView
 from .model import World
 
 
@@ -16,27 +16,33 @@ class GameOfLifePresenter(object):
         self._is_running = False
 
         self.root = tkinter.Tk()
-        self.grid = Grid(width, height)
+        self.main_view = MainView(width, height, master=self.root)
         self.world = World(width, height)
 
-        self.grid.bind('<<Cell-Click>>', self.on_cell_click)
+        # Must use bind_all to capture event
+        self.main_view.bind_all('<<Cell-Click>>', self.on_cell_click)
+        self.main_view.bind_all('<<StartStop-Toggle>>', self.on_startstop_toggle)
 
     @property
     def is_running(self):
         return self._is_running
 
+    def run(self):
+        self.root.mainloop()
+
     def start(self):
         self._is_running = True
+        self.main_view.update(startstop_text='Stop')
         self.root.after(self.delay, self.on_timer)
-        self.root.mainloop()
 
     def stop(self):
         self._is_running = False
+        self.main_view.update(startstop_text='Start')
 
     def on_timer(self):
         if self._is_running:
             self.world.advance()
-            self.grid.set_alives(self.world.alives)
+            self.main_view.update(alives=self.world.alives)
             self.root.after(self.delay, self.on_timer)
 
     def on_cell_click(self, event):
@@ -44,4 +50,11 @@ class GameOfLifePresenter(object):
         x, y = event.x, event.y
 
         self.world.toggle_aliveness(x, y)
-        self.grid.set_alives(self.world.alives)
+        self.main_view.update(alives=self.world.alives)
+
+    def on_startstop_toggle(self, event):
+        logger.debug('StartStop Toggled!')
+        if self._is_running:
+            self.stop()
+        else:
+            self.start()

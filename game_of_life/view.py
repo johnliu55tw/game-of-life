@@ -1,5 +1,5 @@
 import logging
-from tkinter import Canvas
+from tkinter import Canvas, Frame, Button
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,9 @@ class Grid(Canvas):
     ALIVE_COLOR = 'yellow'
     DEAD_COLOR = 'grey'
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, master=None):
+        self._master = master
+
         self.width = width
         self.height = height
         self._alive_cells = frozenset()
@@ -23,12 +25,11 @@ class Grid(Canvas):
                          height=h_px,
                          borderwidth=0,
                          background=self.OUTLINE_COLOR,
-                         highlightthickness=0)
+                         highlightthickness=0,
+                         master=self._master)
         self._cells = self._init_cells()
 
         self.bind('<Button-1>', self._translate_click_event)
-
-        self.pack()
 
     def _gen_coors(self, n):
         space = self.CELL_SIZE + self.OUTLINE_WIDTH
@@ -53,6 +54,9 @@ class Grid(Canvas):
         cell = self._get_cell_from_pixel_coor(event.x, event.y)
         if cell is not None:
             x, y = cell
+            # XXX: Noted that I this line changed the meaning of "x" and "y"
+            # attributes of an event. Since there's no other way to pass
+            # customize data, this is the best I could do.
             self.event_generate('<<Cell-Click>>', x=x, y=y)
 
     def _get_cell_from_pixel_coor(self, px_x, px_y):
@@ -92,3 +96,38 @@ class Grid(Canvas):
             self._set_alive(x, y)
 
         self._alive_cells = alive_cells
+
+
+class StartStopButton(Button):
+
+    def __init__(self, master=None):
+        self._master = master
+        super().__init__(text='Start',
+                         width=10,
+                         master=self._master,
+                         command=self._translate_click_event)
+
+    def _translate_click_event(self):
+        logger.debug('StartStopButton <Button-1> received. Translating into <<StartStop-Toggle>>')
+        self.event_generate('<<StartStop-Toggle>>')
+
+
+class MainView(Frame):
+
+    def __init__(self, grid_width, grid_height, master=None):
+        self._master = master
+        super().__init__(bg='',
+                         master=self._master)
+
+        self.grid = Grid(width=grid_width, height=grid_height, master=self)
+        self.startstop_button = StartStopButton(master=self)
+
+        self.grid.pack()
+        self.startstop_button.pack()
+        self.pack()
+
+    def update(self, alives=None, startstop_text=None):
+        if alives is not None:
+            self.grid.set_alives(alives)
+        if startstop_text is not None:
+            self.startstop_button.config(text=startstop_text)

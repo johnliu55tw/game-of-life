@@ -23,4 +23,4 @@ if __name__ == '__main__':
     g.world.set_alive(17, 16)
     g.world.set_alive(17, 17)
 
-    g.start()
+    g.run()
