@@ -97,3 +97,46 @@ class World(object):
                     next_alives.add(nbr)
 
         self._alives = next_alives
+
+
+class Pattern(object):
+
+    def __init__(self, name, alives):
+        self._name = name
+        self._alives = tuple(alives)
+
+    def __repr__(self):
+        return '<Pattern "{}">: {}'.format(self._name, repr(self._alives))
+
+    @property
+    def alives(self):
+        return tuple(self._alives)
+
+    @property
+    def name(self):
+        return self._name
+
+    def as_screen_coordinate(self, width, height):
+        if not self._alives:
+            return tuple()
+
+        min_width = 1 + 2 * max(abs(coor[0]) for coor in self._alives)
+        min_height = 1 + 2 * max(abs(coor[1]) for coor in self._alives)
+
+        if width < min_width or height < min_height:
+            raise ValueError('Size must be larger than width: {}, height: {}.'.format(
+                min_width, min_height))
+
+        result = tuple((c[0] + int(width / 2), -c[1] + int(height / 2))
+                       for c in self._alives)
+
+        return result
+
+
+Patterns = [
+    Pattern('Clear', []),
+    Pattern('Glider', [(1, 0), (0, 1), (-1, -1), (0, -1), (1, -1)]),
+    Pattern('Small Exploder', [(0, 0), (1, 0), (-1, 0), (0, 1), (-1, -1), (1, -1), (0, -2)]),
+    Pattern('Exploder', [(0, 2), (0, -2), (-2, 2), (-2, 1), (-2, 0), (-2, -1), (-2, -2),
+                         (2, 2), (2, 1), (2, 0), (2, -1), (2, -2)])
+]

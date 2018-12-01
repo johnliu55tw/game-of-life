@@ -1,7 +1,64 @@
 import unittest
 
 from game_of_life.model import World
+from game_of_life.model import Pattern
 from game_of_life.model import OutOfBoundError
+
+
+class PatternTestCase(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_init(self):
+        # The "Glider" pattern
+        pattern = Pattern('Glider', alives=[(1, 0), (0, 1), (-1, -1), (0, -1), (1, -1)])
+
+        self.assertIsInstance(pattern, Pattern)
+        self.assertEqual(pattern.name, 'Glider')
+
+    def test_repr(self):
+        pattern = Pattern('FooBar', alives=[(1, 0), (0, 1)])
+
+        r = repr(pattern)
+
+        self.assertEqual(r,
+                         '<Pattern "FooBar">: ((1, 0), (0, 1))')
+
+    def test_as_screen_coordinate(self):
+        pattern = Pattern('Glider', alives=[(1, 0), (0, 1), (-1, -1), (0, -1), (1, -1)])
+
+        r = pattern.as_screen_coordinate(width=11, height=33)
+
+        # Formula:
+        # x' = x + int(width / 2)
+        # y' = -y + int(height / 2)
+        self.assertEqual(r,
+                         ((6, 16),
+                          (5, 15),
+                          (4, 17),
+                          (5, 17),
+                          (6, 17)))
+
+    def test_as_screen_coordinate_empty_pattern(self):
+        pattern = Pattern('Glider', alives=[])
+
+        r = pattern.as_screen_coordinate(width=11, height=33)
+
+        self.assertEqual(r, tuple())
+
+    def test_as_screen_coordinate_error_size_too_small(self):
+        pattern = Pattern('FooBar', alives=[(10, 5), (-8, -10)])
+
+        # Formula:
+        # width = 1 + 2 * max(abs(x) for x in all_x)
+        # height = 1 + 2 * max(abs(y) for y in all_y)
+        with self.assertRaisesRegex(ValueError,
+                                    r'Size must be larger than width: 21, height: 21.'):
+            pattern.as_screen_coordinate(20, 20)
 
 
 class WorldTestCase(unittest.TestCase):

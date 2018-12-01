@@ -2,7 +2,7 @@ import logging
 import tkinter
 
 from .view import MainView
-from .model import World
+from .model import World, Patterns
 
 
 logger = logging.getLogger(__name__)
@@ -13,9 +13,13 @@ class GameOfLifePresenter(object):
     def __init__(self, width, height, min_delay):
         self.root = tkinter.Tk()
         self.main_view = MainView(width, height,
-                                  pattern_options=['test1', 'test2'],
+                                  pattern_options=[p.name for p in Patterns],
                                   master=self.root)
         self.world = World(width, height)
+
+        default_pattern = Patterns[0]
+        for x, y in default_pattern.as_screen_coordinate(width, height):
+            self.world.set_alive(x, y)
 
         self.size = (width, height)
         self.min_delay = min_delay
@@ -86,3 +90,10 @@ class GameOfLifePresenter(object):
 
     def on_pattern_option_change(self, event):
         logger.debug('Option Menu change, index: {}'.format(event.x))
+        pattern = Patterns[event.x]
+
+        self.world = World(self.size[0], self.size[1])
+        for alive_cell in pattern.as_screen_coordinate(self.size[0], self.size[1]):
+            self.world.set_alive(alive_cell[0], alive_cell[1])
+
+        self.main_view.update(alives=self.world.alives)

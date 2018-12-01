@@ -204,8 +204,10 @@ class MainView(Frame):
 
         self.pack()
 
-    def update(self, alives=None, startstop_text=None):
+    def update(self, alives=None, startstop_text=None, pattern_options=None):
         if alives is not None:
             self.world_grid.set_alives(alives)
         if startstop_text is not None:
             self.startstop_button.config(text=startstop_text)
+        if pattern_options is not None:
+            self.pattern_option_menus.update_options(pattern_options)

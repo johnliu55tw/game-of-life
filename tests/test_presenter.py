@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 
 from game_of_life import presenter
+from game_of_life.model import Patterns
 
 
 @mock.patch('game_of_life.presenter.tkinter')
@@ -188,3 +189,22 @@ class GameOfLifePresenterTestCase(TestCase):
         with mock.patch.object(p, 'set_speed'):
             p.on_speed_change(fake_event)
             p.set_speed.assert_called_with(0.3)
+
+    def test_on_pattern_change(self, m_world, m_main_view, m_tkinter):
+        p = presenter.GameOfLifePresenter(10, 10, 123)
+        p.run()
+        p.start()
+        fake_event = mock.Mock()
+        fake_event.x = 1
+
+        world_inst = m_world.return_value
+        world_inst.reset_mock()
+        main_view_inst = m_main_view.return_value
+        main_view_inst.reset_mock()
+
+        p.on_pattern_option_change(fake_event)
+
+        world_inst.set_alive.assert_has_calls(
+            [mock.call(x, y)
+             for x, y in Patterns[1].as_screen_coordinate(10, 10)])
+        main_view_inst.update.assert_called_with(alives=world_inst.alives)
