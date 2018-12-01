@@ -12,7 +12,9 @@ class GameOfLifePresenter(object):
 
     def __init__(self, width, height, min_delay):
         self.root = tkinter.Tk()
-        self.main_view = MainView(width, height, master=self.root)
+        self.main_view = MainView(width, height,
+                                  pattern_options=['test1', 'test2'],
+                                  master=self.root)
         self.world = World(width, height)
 
         self.size = (width, height)
@@ -26,6 +28,7 @@ class GameOfLifePresenter(object):
         self.main_view.bind_all('<<StartStop-Toggle>>', self.on_startstop_toggle)
         self.main_view.bind_all('<<Next-Click>>', self.on_next_click)
         self.main_view.bind_all('<<Speed-Change>>', self.on_speed_change)
+        self.main_view.bind_all('<<PatternOption-Change>>', self.on_pattern_option_change)
 
     @property
     def is_running(self):
@@ -80,3 +83,6 @@ class GameOfLifePresenter(object):
     def on_speed_change(self, event):
         logger.debug('Speed change event: {}'.format(event.x))
         self.set_speed(event.x/100)
+
+    def on_pattern_option_change(self, event):
+        logger.debug('Option Menu change, index: {}'.format(event.x))

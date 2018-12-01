@@ -1,6 +1,8 @@
 import logging
-from tkinter import Canvas, Frame, Button, Scale
-from tkinter import HORIZONTAL
+from functools import partial
+from tkinter import Canvas, Frame, Button, Scale, OptionMenu
+from tkinter import StringVar
+from tkinter import HORIZONTAL, END
 
 
 logger = logging.getLogger(__name__)
@@ -147,22 +149,58 @@ class SpeedSlider(Scale):
         self.event_generate('<<Speed-Change>>', x=value)
 
 
+class PatternOptionMenu(OptionMenu):
+
+    def __init__(self, master=None, options=None, default_index=0):
+        self._master = master
+        self._var = StringVar()
+        self._var.set('')
+
+        super().__init__(self._master,
+                         self._var,
+                         '')
+
+        if options is not None:
+            self.update_options(options, default_index=default_index)
+
+    def update_options(self, options, default_index=0):
+        # Updating the menu is done by manipulating the internal "Menu" object.
+        menu_obj = self['menu']
+        menu_obj.delete(0, END)
+        for i, option in enumerate(options):
+            menu_obj.add_command(label=option,
+                                 command=partial(self._on_selection_changed,
+                                                 index=i,
+                                                 option=option))
+        # XXX: This Control Variable is still needed to show the selected
+        # value on the button.
+        self._var.set(options[default_index])
+
+    def _on_selection_changed(self, index, option):
+        logger.debug('selection changed to {}:{}'.format(index, option))
+        self._var.set(option)
+        self.event_generate('<<PatternOption-Change>>', x=index)
+
+
 class MainView(Frame):
 
-    def __init__(self, grid_width, grid_height, master=None):
+    def __init__(self, grid_width, grid_height, pattern_options, master=None):
         self._master = master
-        super().__init__(bg='',
+        super().__init__(bg='grey',
                          master=self._master)
 
         self.world_grid = Grid(width=grid_width, height=grid_height, master=self)
         self.startstop_button = StartStopButton(master=self)
         self.next_button = NextButton(master=self)
         self.speed_slider = SpeedSlider(master=self)
+        self.pattern_option_menu = PatternOptionMenu(master=self,
+                                                     options=pattern_options)
 
-        self.world_grid.grid(row=0, column=0, columnspan=3)
+        self.world_grid.grid(row=0, column=0, columnspan=4)
         self.startstop_button.grid(row=1, column=0, pady=5, padx=5)
         self.next_button.grid(row=1, column=1, pady=5, padx=5)
         self.speed_slider.grid(row=1, column=2, pady=5, padx=5)
+        self.pattern_option_menu.grid(row=1, column=3, pady=5, padx=5)
 
         self.pack()
 
