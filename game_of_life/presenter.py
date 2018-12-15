@@ -24,6 +24,8 @@ class GameOfLifePresenter(object):
         self.size = (width, height)
         self.min_delay = min_delay
         self._timer_delay = None
+        # Initial speed. Don't change it or the speed will differ from the speed
+        # scroller!
         self.set_speed(0.1)
         self.stop()
 

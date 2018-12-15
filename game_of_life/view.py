@@ -186,7 +186,7 @@ class MainView(Frame):
 
     def __init__(self, grid_width, grid_height, pattern_options, master=None):
         self._master = master
-        super().__init__(bg='grey',
+        super().__init__(bg='white',
                          master=self._master)
 
         self.world_grid = Grid(width=grid_width, height=grid_height, master=self)

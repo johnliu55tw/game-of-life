@@ -7,6 +7,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 if __name__ == '__main__':
-    g = GameOfLifePresenter(50, 50, 100)
+    g = GameOfLifePresenter(50, 50, 50)
 
     g.run()
