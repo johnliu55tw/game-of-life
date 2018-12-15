@@ -13,6 +13,12 @@ of designing a GUI application that follows the MVP architecture.
 ## Run
 
 ```
+$ game-of-life
+```
+
+Or
+
+```
 $ python3 -m game_of_life
 ```
 
