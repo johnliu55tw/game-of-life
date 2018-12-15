@@ -50,9 +50,9 @@ class GameOfLifePresenterTestCase(TestCase):
         with mock.patch.object(p, 'stop'):
             p.run()
 
-            p.stop.assert_called()
+            p.stop.assert_called_once_with()
             main_view_inst.update.assert_called_with(alives=world_inst.alives)
-            root_inst.mainloop.assert_called()
+            root_inst.mainloop.assert_called_once_with()
 
     def test_start(self, m_world, m_main_view, m_tkinter):
         root_inst = mock.Mock()
@@ -114,7 +114,7 @@ class GameOfLifePresenterTestCase(TestCase):
         main_view_inst = m_main_view.return_value
         root_inst = m_tkinter.Tk.return_value
 
-        world_inst.advance.assert_called()
+        world_inst.advance.assert_called_once_with()
         main_view_inst.update.assert_called_with(alives=world_inst.alives)
         root_inst.after.assert_called_with(p._timer_delay, p.on_timer)
 
@@ -154,7 +154,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         with mock.patch.object(p, 'stop'):
             p.on_startstop_toggle(mock.Mock())
-            p.stop.assert_called()
+            p.stop.assert_called_once_with()
 
     def test_on_startstop_toggle_when_not_running(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
@@ -164,7 +164,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         with mock.patch.object(p, 'start'):
             p.on_startstop_toggle(mock.Mock())
-            p.start.assert_called()
+            p.start.assert_called_once_with()
 
     def test_on_next_click_when_is_running(self, m_world, m_main_view, m_tkinter):
         p = presenter.GameOfLifePresenter(5, 6, 123)
@@ -176,7 +176,7 @@ class GameOfLifePresenterTestCase(TestCase):
 
         p.on_next_click(mock.Mock())
 
-        p.world.advance.assert_called()
+        p.world.advance.assert_called_once_with()
         p.main_view.update.assert_called_with(alives=p.world.alives)
 
     def test_on_speed_change(self, m_world, m_main_view, m_tkinter):
