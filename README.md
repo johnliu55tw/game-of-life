@@ -12,6 +12,12 @@ of designing a GUI application that follows the MVP architecture.
 
 * Python3 (with **Tk** configured)
 
+## Install
+
+```
+$ pip install game-of-life-nodeps
+```
+
 ## Run
 
 ```
